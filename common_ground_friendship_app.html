@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Common Ground - High School Friendship App</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Poppins & Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0f1117',
+                        darkCard: '#161922',
+                        darkCardHover: '#1e2230',
+                        neonPink: '#ff65a3',
+                        neonPinkGlow: '#ff7eb9',
+                        neonTeal: '#00e5ff',
+                        neonMint: '#38ef7d',
+                        glassBorder: 'rgba(255, 255, 255, 0.08)'
+                    },
+                    fontFamily: {
+                        outfit: ['Outfit', 'sans-serif'],
+                        poppins: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0b0c10;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Outfit', sans-serif;
+        }
+        /* Custom Glowing & Glassmorphism styles */
+        .glass-panel {
+            background: rgba(22, 25, 34, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glow-pink {
+            box-shadow: 0 0 20px rgba(255, 101, 163, 0.25);
+        }
+        .glow-teal {
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.25);
+        }
+        .glow-pink-sm {
+            box-shadow: 0 0 10px rgba(255, 101, 163, 0.3);
+        }
+        .glow-teal-sm {
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+        }
+        .text-gradient-pink-teal {
+            background: linear-gradient(135deg, #ff65a3 0%, #00e5ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .text-gradient-teal-mint {
+            background: linear-gradient(135deg, #00e5ff 0%, #38ef7d 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* Hide scrollbars for clean mobile feel */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Tag animations */
+        .tag-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tag-btn.active {
+            background: rgba(0, 229, 255, 0.15);
+            border-color: #00e5ff;
+            color: #00e5ff;
+            box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+        }
+        .tag-btn-pink.active {
+            background: rgba(255, 101, 163, 0.15);
+            border-color: #ff65a3;
+            color: #ff65a3;
+            box-shadow: 0 0 12px rgba(255, 101, 163, 0.3);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-0 md:p-6 bg-slate-950">
+
+    <!-- Mobile Device Frame Wrapper -->
+    <div class="w-full max-w-md h-screen md:h-[860px] bg-darkBg text-slate-100 md:rounded-[40px] shadow-2xl overflow-hidden relative border border-slate-800 flex flex-col">
+        
+        <!-- Top Status Bar Simulation -->
+        <div class="px-6 pt-3 pb-2 flex justify-between items-center text-xs text-slate-400 select-none z-30 bg-darkBg/80 backdrop-blur-md">
+            <span class="font-semibold text-slate-300" id="current-time">9:41</span>
+            <div class="flex items-center space-x-2">
+                <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1 font-mono">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> LHS Verified
+                </span>
+                <i class="fa-solid fa-wifi text-slate-400"></i>
+                <i class="fa-solid fa-battery-full text-slate-400"></i>
+            </div>
+        </div>
+
+        <!-- Main Dynamic Content Canvas -->
+        <main id="app-content" class="flex-1 overflow-y-auto no-scrollbar relative flex flex-col">
+            <!-- Dynamic Screens Rendered Here -->
+        </main>
+
+        <!-- Bottom Navigation Bar (Hidden on Welcome & Survey Screens) -->
+        <nav id="bottom-nav" class="hidden glass-panel border-t border-glassBorder px-4 py-3 flex justify-around items-center z-30">
+            <button onclick="navigateTo('matches')" id="nav-matches" class="flex flex-col items-center gap-1 text-slate-400 hover:text-neonTeal transition-colors">
+                <i class="fa-solid fa-sparkles text-lg"></i>
+                <span class="text-[10px] font-medium">Matches</span>
+            </button>
+            <button onclick="navigateTo('chat')" id="nav-chat" class="flex flex-col items-center gap-1 text-slate-400 hover:text-neonPink transition-colors relative">
+                <i class="fa-solid fa-comments text-lg"></i>
+                <span class="text-[10px] font-medium">Chats</span>
+                <span id="chat-badge" class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-neonPink rounded-full animate-pulse hidden"></span>
+            </button>
+            <button onclick="navigateTo('profile')" id="nav-profile" class="flex flex-col items-center gap-1 text-slate-400 hover:text-neonTeal transition-colors">
+                <i class="fa-solid fa-user-astronaut text-lg"></i>
+                <span class="text-[10px] font-medium">Vibe ID</span>
+            </button>
+        </nav>
+
+        <!-- Universal Safety / Modal Container -->
+        <div id="modal-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 transition-all duration-300 opacity-0">
+            <div id="modal-box" class="w-full max-w-sm glass-panel bg-darkCard border border-glassBorder rounded-3xl p-6 shadow-2xl transform scale-95 transition-all duration-300">
+                <!-- Dynamic Modal Content Injection -->
+            </div>
+        </div>
+
+        <!-- Toast Notification Container -->
+        <div id="toast-container" class="absolute top-12 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-xs pointer-events-none"></div>
+
+    </div>
+
+    <!-- Application JavaScript Logic -->
+    <script>
+        // --- STATE MANAGEMENT ---
+        const userState = {
+            isLoggedIn: false,
+            hasCompletedSurvey: false,
+            userMatchId: "Match #4829",
+            userPersona: "Velvet Otter 🦦",
+            grade: "Junior (11th)",
+            realName: "Maya Lin",
+            socials: {
+                discord: "@mayalin_vibe",
+                instagram: "@maya.lin.school",
+                bereal: "@mayalin"
+            },
+            survey: {
+                interests: ["Basketball", "Thrifting & Fashion", "Hip-Hop", "Boba & Coffee"],
+                vibe: { introvert: 45, morningPerson: 50, humor: "Chill & Lowkey" },
+                media: ["Concerts & Festivals", "Hip-Hop", "True Crime"],
+                goal: "Concert/Event Partner"
+            },
+            currentChatPartner: null,
+            revealRequests: {} // Track reveal states per user match ID
+        };
+
+        // Mock Database of Potential School Matches with Structured Tags Only (No text bios for anonymity)
+        const mockMatches = [
+            {
+                id: "Match #9102",
+                persona: "Solar Tiger 🐯",
+                grade: "Junior (11th)",
+                compatibility: 96,
+                sharedInterests: ["Basketball", "Hip-Hop", "Thrifting & Fashion", "Late Night Drives"],
+                vibe: "Outgoing & Hype • Spontaneous • Athletic",
+                friendshipGoal: "Casual Hangouts & Sports Buddy",
+                realName: "Alex Rivera",
+                socials: { discord: "@alex_tiger", instagram: "@alex.rivera99", bereal: "@alex_riv" },
+                chatHistory: [
+                    { sender: 'them', text: "Hey! Saw you love thrifting and basketball too! 👟", time: "2m ago" },
+                    { sender: 'me', text: "Yes! Which thrift stores around here do you usually hit up?", time: "1m ago" }
+                ]
+            },
+            {
+                id: "Match #3310",
+                persona: "Cosmic Star 🌟",
+                grade: "Sophomore (10th)",
+                compatibility: 91,
+                sharedInterests: ["Photography", "Indie Rock", "Concerts & Festivals", "Bake & Cook"],
+                vibe: "Creative & Wild • Chill & Lowkey",
+                friendshipGoal: "Concert & Event Partner",
+                realName: "Jordan Vance",
+                socials: { discord: "@jordan_star", instagram: "@jvance_bakes", bereal: "@jordanv" },
+                chatHistory: [
+                    { sender: 'them', text: "Have you listened to the new Indie Rock playlist on Spotify yet?", time: "10m ago" }
+                ]
+            },
+            {
+                id: "Match #7741",
+                persona: "Wave Runner 🌊",
+                grade: "Senior (12th)",
+                compatibility: 86,
+                sharedInterests: ["Skateboarding", "Content Creation", "Hip-Hop", "Beach Days"],
+                vibe: "Spontaneous & Adventurous • Meme Enthusiast",
+                friendshipGoal: "Adventure & Vlogs Squad",
+                realName: "Samira Patel",
+                socials: { discord: "@wave_samira", instagram: "@samira.p", bereal: "@samirap" },
+                chatHistory: []
+            },
+            {
+                id: "Match #5219",
+                persona: "Zenith Phoenix 🦅",
+                grade: "Junior (11th)",
+                compatibility: 83,
+                sharedInterests: ["Volleyball", "K-Pop", "Boba & Coffee", "Dance"],
+                vibe: "Empath & Good Listener • Structured",
+                friendshipGoal: "Study & Boba Buddy",
+                realName: "Lucas Chen",
+                socials: { discord: "@lucas_phoenix", instagram: "@lucas.chen.vball", bereal: "@lucaschen" },
+                chatHistory: []
+            }
+        ];
+
+        // Expanded Survey Options Config across all high school interest spectrums
+        const surveyData = {
+            interestCategories: [
+                {
+                    category: "Sports & Athletics ⚽",
+                    tags: ["Basketball", "Soccer", "Volleyball", "Track & Field", "Skateboarding", "Cheer", "Gym / Lifting", "Swimming", "Dance", "Tennis"]
+                },
+                {
+                    category: "Music & Pop Culture 🎵",
+                    tags: ["K-Pop", "Hip-Hop", "Indie Rock", "Pop Hits", "Concerts & Festivals", "Fashion & Thrifting", "Sneakers", "True Crime", "Movie Marathons"]
+                },
+                {
+                    category: "Creative & Arts 🎨",
+                    tags: ["Photography", "Digital Art", "Painting", "Writing & Poetry", "Theatre & Drama", "Bake & Cook", "Music Production", "Content Creation / TikTok"]
+                },
+                {
+                    category: "Social & Outdoors ☕",
+                    tags: ["Boba & Coffee", "Late Night Drives", "Camping & Hiking", "Volunteering", "Beach Days", "Road Trips", "Mall Hangouts"]
+                },
+                {
+                    category: "Gaming & Tech 🎮",
+                    tags: ["Console Gaming", "Mobile Games", "Esports", "Anime & Manga", "Tabletop / Board Games", "Coding & Robotics"]
+                }
+            ],
+            humor: [
+                "Outgoing & Hype",
+                "Chill & Lowkey",
+                "Sarcastic & Witty",
+                "Empath & Good Listener",
+                "Creative & Wild",
+                "Spontaneous & Adventurous",
+                "Extroverted Butterfly",
+                "Meme Enthusiast"
+            ],
+            goals: [
+                "Casual Hangout Friend",
+                "Sports & Gym Partner",
+                "Concert & Event Partner",
+                "Study & Boba Buddy",
+                "Gaming Squad",
+                "Deep Talk & Advice Friend"
+            ]
+        };
+
+        let currentSurveyStep = 1;
+
+        // --- NAVIGATION CONTROLLER ---
+        function navigateTo(screen, data = null) {
+            const app = document.getElementById('app-content');
+            const nav = document.getElementById('bottom-nav');
+
+            // Update Nav State UI
+            document.querySelectorAll('#bottom-nav button').forEach(b => {
+                b.classList.remove('text-neonTeal', 'text-neonPink');
+                b.classList.add('text-slate-400');
+            });
+
+            if (screen === 'welcome') {
+                nav.classList.add('hidden');
+                app.innerHTML = renderWelcomeScreen();
+            } else if (screen === 'survey') {
+                nav.classList.add('hidden');
+                currentSurveyStep = 1;
+                app.innerHTML = renderSurveyScreen();
+            } else if (screen === 'matches') {
+                nav.classList.remove('hidden');
+                document.getElementById('nav-matches').classList.add('text-neonTeal');
+                app.innerHTML = renderMatchesScreen();
+            } else if (screen === 'chat') {
+                nav.classList.remove('hidden');
+                document.getElementById('nav-chat').classList.add('text-neonPink');
+                if (data) userState.currentChatPartner = data;
+                else if (!userState.currentChatPartner) userState.currentChatPartner = mockMatches[0];
+                app.innerHTML = renderChatScreen();
+            } else if (screen === 'profile') {
+                nav.classList.remove('hidden');
+                document.getElementById('nav-profile').classList.add('text-neonTeal');
+                app.innerHTML = renderProfileScreen();
+            }
+        }
+
+        // --- SCREEN RENDERING FUNCTIONS ---
+
+        // 1. WELCOME SCREEN
+        function renderWelcomeScreen() {
+            return `
+                <div class="flex-1 flex flex-col justify-between p-6 relative overflow-hidden bg-gradient-to-b from-slate-900 via-darkBg to-darkBg">
+                    <!-- Background Neon Glow Accent -->
+                    <div class="absolute -top-20 -right-20 w-64 h-64 bg-neonPink/20 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-neonTeal/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <!-- Header branding -->
+                    <div class="pt-8 text-center relative z-10">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-neonPink to-neonTeal p-0.5 mb-4 glow-teal-sm">
+                            <div class="w-full h-full bg-darkBg rounded-[14px] flex items-center justify-center">
+                                <i class="fa-solid fa-handshake-simple text-2xl text-gradient-pink-teal"></i>
+                            </div>
+                        </div>
+                        <h1 class="text-4xl font-extrabold tracking-tight text-white mb-2 font-heading">
+                            Common <span class="text-gradient-pink-teal">Ground</span>
+                        </h1>
+                        <p class="text-sm text-slate-400 max-w-xs mx-auto">
+                            Make real high school friends based on vibe & passions — not popularity or appearance.
+                        </p>
+                    </div>
+
+                    <!-- App Highlights Badges -->
+                    <div class="space-y-3 relative z-10 my-auto">
+                        <div class="glass-panel p-3.5 rounded-2xl flex items-center gap-3 border border-glassBorder hover:border-neonTeal/30 transition-all">
+                            <div class="w-10 h-10 rounded-xl bg-neonTeal/10 flex items-center justify-center text-neonTeal">
+                                <i class="fa-solid fa-[#00e5ff] fa-user-ninja text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-200">100% Anonymous First</h4>
+                                <p class="text-[11px] text-slate-400">Match safely using randomly assigned cute codenames.</p>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-3.5 rounded-2xl flex items-center gap-3 border border-glassBorder hover:border-neonPink/30 transition-all">
+                            <div class="w-10 h-10 rounded-xl bg-neonPink/10 flex items-center justify-center text-neonPink">
+                                <i class="fa-solid fa-lock-open text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-200">Mutual Identity Reveal</h4>
+                                <p class="text-[11px] text-slate-400">Real names & socials are shared only when both agree.</p>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-3.5 rounded-2xl flex items-center gap-3 border border-glassBorder hover:border-neonMint/30 transition-all">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                                <i class="fa-solid fa-shield-halved text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-200">School Verified Safe</h4>
+                                <p class="text-[11px] text-slate-400">Strictly for students in your high school network.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="space-y-3 pt-4 relative z-10">
+                        <button onclick="navigateTo('survey')" class="w-full py-4 rounded-full bg-gradient-to-r from-neonPink to-pink-500 text-white font-bold text-sm shadow-lg glow-pink hover:opacity-95 transition-all flex items-center justify-center gap-2">
+                            <span>Get Started & Take Survey</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                        <button onclick="skipToMatchesDemo()" class="w-full py-3.5 rounded-full glass-panel border border-slate-700 text-slate-300 font-medium text-xs hover:bg-slate-800/60 transition-all">
+                            Log In / Quick Demo Mode
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 2. MULTI-STEP SURVEY SCREEN
+        function renderSurveyScreen() {
+            return `
+                <div class="flex-1 flex flex-col p-6 bg-darkBg relative overflow-hidden">
+                    <!-- Progress Bar Header -->
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center text-xs mb-2">
+                            <span class="text-slate-400 font-medium">Step <span id="survey-step-num">${currentSurveyStep}</span> of 4</span>
+                            <span class="text-neonTeal font-semibold" id="survey-step-title">Interests & Hobbies</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                            <div id="survey-progress-bar" class="bg-gradient-to-r from-neonPink to-neonTeal h-full transition-all duration-300" style="width: ${currentSurveyStep * 25}%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Step Container -->
+                    <div id="survey-step-content" class="flex-1 overflow-y-auto no-scrollbar pb-4">
+                        ${getSurveyStepHTML(currentSurveyStep)}
+                    </div>
+
+                    <!-- Navigation Footer -->
+                    <div class="pt-4 flex justify-between gap-3 border-t border-glassBorder">
+                        ${currentSurveyStep > 1 ? `
+                            <button onclick="prevSurveyStep()" class="px-5 py-3 rounded-full glass-panel border border-slate-700 text-slate-300 text-xs font-semibold hover:bg-slate-800">
+                                Back
+                            </button>
+                        ` : `<div></div>`}
+                        
+                        <button onclick="nextSurveyStep()" class="px-7 py-3 rounded-full bg-gradient-to-r from-neonTeal to-emerald-400 text-slate-950 text-xs font-bold glow-teal-sm hover:opacity-90 ml-auto flex items-center gap-2">
+                            <span>${currentSurveyStep === 4 ? 'Finish Vibe ID' : 'Continue'}</span>
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getSurveyStepHTML(step) {
+            if (step === 1) {
+                return `
+                    <div class="space-y-5 animate-fadeIn">
+                        <div>
+                            <h2 class="text-xl font-bold text-white mb-1">What are your passions & hobbies?</h2>
+                            <p class="text-xs text-slate-400">Pick tags across sports, music, arts, lifestyle & games to find your people.</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            ${surveyData.interestCategories.map(cat => `
+                                <div>
+                                    <h4 class="text-[11px] font-bold text-neonTeal uppercase tracking-wider mb-2">${cat.category}</h4>
+                                    <div class="flex flex-wrap gap-2">
+                                        ${cat.tags.map(interest => {
+                                            const selected = userState.survey.interests.includes(interest);
+                                            return `
+                                                <button onclick="toggleInterestTag('${interest}', this)" 
+                                                    class="tag-btn ${selected ? 'active' : ''} px-3.5 py-2 rounded-full glass-panel border border-glassBorder text-xs text-slate-300 font-medium hover:border-neonTeal/50 flex items-center gap-1.5">
+                                                    <span>${interest}</span>
+                                                </button>
+                                            `;
+                                        }).join('')}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else if (step === 2) {
+                return `
+                    <div class="space-y-6 animate-fadeIn">
+                        <div>
+                            <h2 class="text-xl font-bold text-white mb-1">Your Vibe & Personality</h2>
+                            <p class="text-xs text-slate-400">Select the trait that best describes your overall daily energy!</p>
+                        </div>
+
+                        <!-- Introvert / Extrovert Slider -->
+                        <div class="glass-panel p-4 rounded-2xl border border-glassBorder space-y-3">
+                            <div class="flex justify-between text-xs font-semibold">
+                                <span class="text-neonPink">Chill / Introverted</span>
+                                <span class="text-neonTeal">Hype / Extroverted</span>
+                            </div>
+                            <input type="range" min="0" max="100" value="${userState.survey.vibe.introvert}" 
+                                oninput="userState.survey.vibe.introvert = this.value"
+                                class="w-full accent-neonPink bg-slate-800 h-2 rounded-lg cursor-pointer">
+                        </div>
+
+                        <!-- Personality Trait Selection -->
+                        <div class="glass-panel p-4 rounded-2xl border border-glassBorder space-y-2">
+                            <label class="text-xs font-bold text-slate-300">Primary Persona Vibe</label>
+                            <div class="grid grid-cols-2 gap-2 pt-1">
+                                ${surveyData.humor.map(h => `
+                                    <button onclick="setHumorStyle('${h}', this)" 
+                                        class="p-2.5 rounded-xl text-left border text-xs font-medium transition-all ${userState.survey.vibe.humor === h ? 'border-neonTeal bg-neonTeal/10 text-neonTeal' : 'border-glassBorder text-slate-400 hover:border-slate-700'}">
+                                        ${h}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (step === 3) {
+                return `
+                    <div class="space-y-5 animate-fadeIn">
+                        <div>
+                            <h2 class="text-xl font-bold text-white mb-1">Music, Entertainment & Vibes</h2>
+                            <p class="text-xs text-slate-400">What do you listen to or watch when you're hanging out?</p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <label class="text-xs font-bold text-slate-300">Select Favorite Entertainment Tags</label>
+                            <div class="flex flex-wrap gap-2">
+                                ${["Hip-Hop", "K-Pop", "Indie Rock", "Pop Hits", "Concerts & Festivals", "Thrifting & Fashion", "True Crime", "Reality TV", "Movie Marathons", "Anime & Manga", "Lo-Fi Beats"].map(m => {
+                                    const active = userState.survey.media.includes(m);
+                                    return `
+                                        <button onclick="toggleMediaTag('${m}', this)" 
+                                            class="tag-btn-pink ${active ? 'active' : ''} px-3.5 py-2 rounded-full glass-panel border border-glassBorder text-xs text-slate-300">
+                                            ${m}
+                                        </button>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (step === 4) {
+                return `
+                    <div class="space-y-5 animate-fadeIn">
+                        <div>
+                            <h2 class="text-xl font-bold text-white mb-1">Friendship Goal</h2>
+                            <p class="text-xs text-slate-400">What type of friend are you hoping to connect with first?</p>
+                        </div>
+
+                        <div class="space-y-2.5">
+                            ${surveyData.goals.map(g => `
+                                <button onclick="setGoal('${g}', this)" 
+                                    class="w-full p-4 rounded-2xl glass-panel border ${userState.survey.goal === g ? 'border-neonPink bg-neonPink/10 text-white shadow-lg glow-pink-sm' : 'border-glassBorder text-slate-400 hover:border-slate-700'} flex items-center justify-between transition-all">
+                                    <span class="text-xs font-bold">${g}</span>
+                                    <i class="fa-solid ${userState.survey.goal === g ? 'fa-circle-check text-neonPink' : 'fa-circle text-slate-700'} text-base"></i>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // 3. ANONYMOUS MATCHES EXPLORER SCREEN
+        function renderMatchesScreen() {
+            return `
+                <div class="flex-1 flex flex-col p-5 bg-darkBg overflow-y-auto no-scrollbar space-y-4">
+                    <!-- Header Bar -->
+                    <div class="flex justify-between items-center pb-2">
+                        <div>
+                            <h2 class="text-2xl font-extrabold text-white font-heading">Common Ground</h2>
+                            <p class="text-xs text-slate-400 font-medium">100% anonymous interest matches</p>
+                        </div>
+                        <span class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-neonTeal text-xs font-bold">
+                            3
+                        </span>
+                    </div>
+
+                    <!-- User Active Vibe Summary Banner -->
+                    <div class="glass-panel p-3.5 rounded-2xl border border-neonTeal/30 bg-gradient-to-r from-neonTeal/10 to-transparent flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">${userState.userPersona.split(' ').pop()}</span>
+                            <div>
+                                <span class="text-[10px] text-neonTeal uppercase tracking-wider font-bold">Your Secret Identity</span>
+                                <h4 class="text-xs font-bold text-white">${userState.userMatchId} (${userState.userPersona})</h4>
+                            </div>
+                        </div>
+                        <button onclick="openEditIdentityModal()" class="px-3 py-1.5 rounded-full bg-neonTeal/20 border border-neonTeal/40 text-neonTeal text-xs font-bold hover:bg-neonTeal/30 transition-all flex items-center gap-1">
+                            <i class="fa-solid fa-pen-to-square text-[10px]"></i>
+                            <span>Edit</span>
+                        </button>
+                    </div>
+
+                    <!-- Matches List -->
+                    <div class="space-y-4">
+                        ${mockMatches.map(match => renderMatchCard(match)).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderMatchCard(match) {
+            return `
+                <div class="glass-panel rounded-3xl p-5 border border-glassBorder hover:border-slate-700 transition-all space-y-4 relative overflow-hidden group">
+                    <!-- Top Ribbon: Compatibility Score -->
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center text-2xl shadow-inner">
+                                ${match.persona.split(' ').pop()}
+                            </div>
+                            <div>
+                                <h3 class="text-base font-bold text-white font-heading">${match.id}</h3>
+                                <p class="text-[11px] text-slate-400">${match.persona.split(' ')[0]} ${match.persona.split(' ')[1]} • ${match.grade}</p>
+                            </div>
+                        </div>
+                        <div class="px-3 py-1.5 rounded-full bg-gradient-to-r from-neonPink/20 to-neonTeal/20 border border-neonPink/30 flex items-center gap-1.5">
+                            <i class="fa-solid fa-fire text-neonPink text-xs"></i>
+                            <span class="text-xs font-extrabold text-gradient-pink-teal">${match.compatibility}% Match</span>
+                        </div>
+                    </div>
+
+                    <!-- Vibe Persona Pill -->
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-[11px] text-slate-300 font-medium">
+                        <i class="fa-solid fa-bolt text-neonTeal text-[10px]"></i>
+                        <span>${match.vibe}</span>
+                    </div>
+
+                    <!-- Shared Interests Pills -->
+                    <div>
+                        <span class="text-[10px] uppercase text-slate-500 font-bold block mb-1.5">Shared Interests & Vibes</span>
+                        <div class="flex flex-wrap gap-1.5">
+                            ${match.sharedInterests.map(interest => `
+                                <span class="px-2.5 py-1 rounded-md bg-slate-800/80 border border-slate-700/60 text-[11px] text-neonTeal font-medium">
+                                    ${interest}
+                                </span>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Goal Badge -->
+                    <div class="flex items-center gap-2 text-[11px] text-slate-400">
+                        <i class="fa-solid fa-bullseye text-neonPink text-xs"></i>
+                        <span>Looking for: <strong class="text-slate-200">${match.friendshipGoal}</strong></span>
+                    </div>
+
+                    <!-- Actions Bar -->
+                    <div class="pt-2 flex items-center gap-2 border-t border-slate-800/80">
+                        <button onclick="startChatWith('${match.id}')" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-neonPink to-pink-500 text-white text-xs font-bold shadow-md hover:opacity-95 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane text-xs"></i>
+                            <span>Chat Anonymously</span>
+                        </button>
+                        <button onclick="openReportModal('${match.id}')" class="p-2.5 rounded-xl glass-panel border border-slate-800 text-slate-500 hover:text-red-400 hover:border-red-500/30 transition-all" title="Report or Block">
+                            <i class="fa-solid fa-shield-cat"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 4. ANONYMOUS CHAT INTERFACE
+        function renderChatScreen() {
+            const partner = userState.currentChatPartner || mockMatches[0];
+            const isRevealed = userState.revealRequests[partner.id]?.bothAccepted || false;
+
+            return `
+                <div class="flex-1 flex flex-col bg-darkBg h-full">
+                    <!-- Chat Top Header -->
+                    <div class="p-4 glass-panel border-b border-glassBorder flex items-center justify-between z-10">
+                        <div class="flex items-center gap-3">
+                            <button onclick="navigateTo('matches')" class="text-slate-400 hover:text-white mr-1">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </button>
+                            <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-xl">
+                                ${partner.persona.split(' ').pop()}
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
+                                    <span>${isRevealed ? partner.realName : partner.id}</span>
+                                    ${isRevealed ? '<i class="fa-solid fa-circle-check text-neonTeal text-xs" title="Identity Revealed"></i>' : ''}
+                                </h3>
+                                <p class="text-[10px] text-slate-400">
+                                    ${isRevealed ? `@${partner.socials.discord}` : `${partner.persona} • ${partner.compatibility}% Match`}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Header Action Icons -->
+                        <div class="flex items-center gap-2">
+                            <button onclick="openRevealModal('${partner.id}')" 
+                                class="px-2.5 py-1.5 rounded-lg ${isRevealed ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-neonPink/15 text-neonPink border border-neonPink/30'} text-[11px] font-bold flex items-center gap-1 hover:opacity-90">
+                                <i class="fa-solid ${isRevealed ? 'fa-id-card' : 'fa-user-lock'}"></i>
+                                <span>${isRevealed ? 'Revealed' : 'Reveal ID'}</span>
+                            </button>
+                            <button onclick="openReportModal('${partner.id}')" class="text-slate-500 hover:text-red-400 p-2">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Chat Messages Log -->
+                    <div id="chat-box" class="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar">
+                        <!-- Privacy Notice -->
+                        <div class="text-center my-2">
+                            <span class="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-[10px] text-slate-500">
+                                🔒 Chat is 100% anonymous until both agree to reveal identities.
+                            </span>
+                        </div>
+
+                        ${partner.chatHistory.map(msg => `
+                            <div class="flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'} space-y-1">
+                                <div class="max-w-[80%] p-3 rounded-2xl text-xs leading-relaxed ${
+                                    msg.sender === 'me' 
+                                        ? 'bg-gradient-to-r from-neonPink to-pink-600 text-white rounded-tr-none shadow-md' 
+                                        : 'glass-panel border border-glassBorder text-slate-200 rounded-tl-none'
+                                }">
+                                    ${msg.text}
+                                </div>
+                                <span class="text-[9px] text-slate-500 px-1">${msg.time}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- Quick Icebreaker Generator Bar -->
+                    <div class="px-4 py-2 bg-slate-900/60 border-t border-slate-800/60 flex items-center justify-between">
+                        <button onclick="generateIcebreaker('${partner.id}')" class="text-[11px] text-neonTeal font-medium flex items-center gap-1.5 hover:underline">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Need an icebreaker? Click here</span>
+                        </button>
+                    </div>
+
+                    <!-- Chat Input Field -->
+                    <div class="p-3 glass-panel border-t border-glassBorder">
+                        <form onsubmit="sendChatMessage(event, '${partner.id}')" class="flex items-center gap-2">
+                            <input id="chat-input" type="text" placeholder="Type a friendly message..." 
+                                class="flex-1 bg-slate-900 border border-slate-800 rounded-full px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-neonTeal">
+                            <button type="submit" class="w-10 h-10 rounded-full bg-neonTeal text-slate-950 font-bold flex items-center justify-center hover:opacity-90 glow-teal-sm">
+                                <i class="fa-solid fa-paper-plane text-xs"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 5. ANONYMOUS VIBE PROFILE & DASHBOARD
+        function renderProfileScreen() {
+            return `
+                <div class="flex-1 flex flex-col p-5 bg-darkBg overflow-y-auto no-scrollbar space-y-5">
+                    <!-- Profile Header Card -->
+                    <div class="glass-panel p-6 rounded-3xl border border-glassBorder text-center relative overflow-hidden">
+                        <div class="absolute top-3 right-3">
+                            <span class="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">
+                                100% Anonymous
+                            </span>
+                        </div>
+
+                        <div class="w-20 h-20 rounded-3xl bg-slate-800 border-2 border-neonTeal mx-auto flex items-center justify-center text-4xl mb-3 shadow-lg glow-teal-sm">
+                            ${userState.userPersona.split(' ').pop()}
+                        </div>
+
+                        <h2 class="text-xl font-extrabold text-white font-heading">${userState.userMatchId}</h2>
+                        <p class="text-xs text-neonTeal font-semibold mb-3">${userState.userPersona} • ${userState.grade}</p>
+                        
+                        <button onclick="openEditIdentityModal()" class="w-full py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-slate-200 font-semibold hover:border-neonTeal transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-user-gear text-neonTeal"></i>
+                            <span>Edit Secret Identity & Socials</span>
+                        </button>
+                    </div>
+
+                    <!-- Verified Identity Badge (Hidden from public) -->
+                    <div class="glass-panel p-4 rounded-2xl border border-glassBorder space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-slate-300 flex items-center gap-2">
+                                <i class="fa-solid fa-user-shield text-neonPink"></i>
+                                <span>Real Verified Identity (Private)</span>
+                            </h4>
+                            <span class="text-[10px] text-slate-500">Mutual consent only</span>
+                        </div>
+                        
+                        <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800/80 space-y-1.5 text-xs text-slate-300">
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Real Name:</span>
+                                <span class="font-medium text-white">${userState.realName}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Discord:</span>
+                                <span class="font-mono text-neonTeal">${userState.socials.discord}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">Instagram:</span>
+                                <span class="font-mono text-neonPink">${userState.socials.instagram}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500">BeReal:</span>
+                                <span class="font-mono text-amber-400">${userState.socials.bereal}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Selected Badges & Quick Tag Manager -->
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Your Active Passion Badges</h4>
+                            <span class="text-[10px] text-neonTeal">Tap badge to remove</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            ${userState.survey.interests.map(tag => `
+                                <button onclick="removeUserTag('${tag}')" class="px-3 py-1.5 rounded-full glass-panel border border-neonTeal/30 text-neonTeal text-xs font-semibold flex items-center gap-1.5 hover:border-red-400 hover:text-red-400 transition-all">
+                                    <span>${tag}</span>
+                                    <i class="fa-solid fa-xmark text-[10px]"></i>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <!-- Reset / Retake Survey -->
+                    <button onclick="navigateTo('survey')" class="w-full py-3 rounded-2xl glass-panel border border-slate-800 text-slate-400 text-xs font-medium hover:text-white hover:border-slate-700 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Retake Vibe & Interest Survey</span>
+                    </button>
+                </div>
+            `;
+        }
+
+        // --- EDIT IDENTITY MODAL ---
+        function openEditIdentityModal() {
+            const modalBox = document.getElementById('modal-box');
+            modalBox.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center border-b border-glassBorder pb-3">
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-user-gear text-neonTeal"></i>
+                            <span>Edit Secret Identity</span>
+                        </h3>
+                        <button onclick="closeModal()" class="text-slate-500 hover:text-white text-xs">
+                            <i class="fa-solid fa-xmark text-sm"></i>
+                        </button>
+                    </div>
+
+                    <form onsubmit="saveSecretIdentity(event)" class="space-y-3 text-xs">
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-300 block mb-1">Secret Codename Persona</label>
+                            <input type="text" id="edit-persona" value="${userState.userPersona}" required
+                                class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-neonTeal">
+                        </div>
+
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-300 block mb-1">Grade Level</label>
+                            <select id="edit-grade" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-neonTeal">
+                                <option ${userState.grade.includes('Freshman') ? 'selected' : ''}>Freshman (9th)</option>
+                                <option ${userState.grade.includes('Sophomore') ? 'selected' : ''}>Sophomore (10th)</option>
+                                <option ${userState.grade.includes('Junior') ? 'selected' : ''}>Junior (11th)</option>
+                                <option ${userState.grade.includes('Senior') ? 'selected' : ''}>Senior (12th)</option>
+                            </select>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-800">
+                            <span class="text-[10px] text-neonPink uppercase tracking-wider font-bold block mb-2">Secret Identity (For Mutual Reveal)</span>
+                            
+                            <div class="space-y-2">
+                                <div>
+                                    <label class="text-[10px] text-slate-400 block mb-0.5">Real First & Last Name</label>
+                                    <input type="text" id="edit-realname" value="${userState.realName}" required
+                                        class="w-full p-2 rounded-lg bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-neonPink">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] text-slate-400 block mb-0.5">Discord Handle</label>
+                                    <input type="text" id="edit-discord" value="${userState.socials.discord}" required
+                                        class="w-full p-2 rounded-lg bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-neonPink font-mono">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] text-slate-400 block mb-0.5">Instagram Handle</label>
+                                    <input type="text" id="edit-instagram" value="${userState.socials.instagram}" required
+                                        class="w-full p-2 rounded-lg bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-neonPink font-mono">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2 pt-3">
+                            <button type="submit" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-neonTeal to-emerald-400 text-slate-950 font-bold shadow-md hover:opacity-95">
+                                Save Profile
+                            </button>
+                            <button type="button" onclick="closeModal()" class="px-4 py-2.5 rounded-xl glass-panel border border-slate-700 text-slate-400 hover:text-white">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            showModal();
+        }
+
+        function saveSecretIdentity(e) {
+            e.preventDefault();
+            userState.userPersona = document.getElementById('edit-persona').value.trim();
+            userState.grade = document.getElementById('edit-grade').value;
+            userState.realName = document.getElementById('edit-realname').value.trim();
+            userState.socials.discord = document.getElementById('edit-discord').value.trim();
+            userState.socials.instagram = document.getElementById('edit-instagram').value.trim();
+
+            closeModal();
+            showToast("✨ Identity profile updated!");
+            navigateTo('profile');
+        }
+
+        function removeUserTag(tag) {
+            const idx = userState.survey.interests.indexOf(tag);
+            if (idx > -1) {
+                userState.survey.interests.splice(idx, 1);
+                showToast(`Removed badge: ${tag}`);
+                navigateTo('profile');
+            }
+        }
+
+        // --- SURVEY INTERACTION LOGIC ---
+
+        function toggleInterestTag(tag, btn) {
+            const idx = userState.survey.interests.indexOf(tag);
+            if (idx > -1) {
+                userState.survey.interests.splice(idx, 1);
+                btn.classList.remove('active');
+            } else {
+                userState.survey.interests.push(tag);
+                btn.classList.add('active');
+            }
+        }
+
+        function toggleMediaTag(tag, btn) {
+            const idx = userState.survey.media.indexOf(tag);
+            if (idx > -1) {
+                userState.survey.media.splice(idx, 1);
+                btn.classList.remove('active');
+            } else {
+                userState.survey.media.push(tag);
+                btn.classList.add('active');
+            }
+        }
+
+        function setHumorStyle(style, btn) {
+            userState.survey.vibe.humor = style;
+            const parent = btn.parentElement;
+            parent.querySelectorAll('button').forEach(b => {
+                b.className = 'p-2.5 rounded-xl text-left border text-xs font-medium transition-all border-glassBorder text-slate-400 hover:border-slate-700';
+            });
+            btn.className = 'p-2.5 rounded-xl text-left border text-xs font-medium transition-all border-neonTeal bg-neonTeal/10 text-neonTeal';
+        }
+
+        function setGoal(goal, btn) {
+            userState.survey.goal = goal;
+            renderSurveyStep(4);
+        }
+
+        function nextSurveyStep() {
+            if (currentSurveyStep < 4) {
+                currentSurveyStep++;
+                renderSurveyStep(currentSurveyStep);
+            } else {
+                userState.hasCompletedSurvey = true;
+                showToast("🎉 Vibe Profile Created Successfully!");
+                navigateTo('matches');
+            }
+        }
+
+        function prevSurveyStep() {
+            if (currentSurveyStep > 1) {
+                currentSurveyStep--;
+                renderSurveyStep(currentSurveyStep);
+            }
+        }
+
+        function renderSurveyStep(step) {
+            document.getElementById('survey-step-num').innerText = step;
+            document.getElementById('survey-progress-bar').style.width = `${step * 25}%`;
+            
+            const titles = ["Interests & Hobbies", "Vibe & Personality", "Media & Music", "Friendship Goal"];
+            document.getElementById('survey-step-title').innerText = titles[step - 1];
+
+            document.getElementById('survey-step-content').innerHTML = getSurveyStepHTML(step);
+        }
+
+        function skipToMatchesDemo() {
+            userState.hasCompletedSurvey = true;
+            navigateTo('matches');
+        }
+
+        // --- CHAT INTERACTION LOGIC ---
+
+        function startChatWith(partnerId) {
+            const partner = mockMatches.find(m => m.id === partnerId);
+            userState.currentChatPartner = partner;
+            navigateTo('chat', partner);
+        }
+
+        function sendChatMessage(e, partnerId) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const partner = mockMatches.find(m => m.id === partnerId);
+            partner.chatHistory.push({ sender: 'me', text: text, time: 'Just now' });
+            input.value = '';
+            navigateTo('chat', partner);
+
+            // Auto simulated bot response after 1 font tick
+            setTimeout(() => {
+                const autoResponses = [
+                    "That's so cool! I completely agree with you on that.",
+                    "No way! Have you been interested in that for long?",
+                    "Haha right? High school can be chaotic, so having shared hobbies helps a lot!",
+                    "Awesome! We should definitely hang out during study hall sometime."
+                ];
+                const reply = autoResponses[Math.floor(Math.random() * autoResponses.length)];
+                partner.chatHistory.push({ sender: 'them', text: reply, time: 'Just now' });
+                navigateTo('chat', partner);
+            }, 1200);
+        }
+
+        function generateIcebreaker(partnerId) {
+            const icebreakers = [
+                "If you could only listen to one album for the rest of high school, what would it be?",
+                "What's your favorite cafeteria food hack?",
+                "Are you team late-night gaming or morning coffee/study?",
+                "What's the best movie you've watched this past month?"
+            ];
+            const pick = icebreakers[Math.floor(Math.random() * icebreakers.length)];
+            const input = document.getElementById('chat-input');
+            if (input) input.value = pick;
+        }
+
+        // 6. MUTUAL consent IDENTITY REVEAL FLOW
+        function openRevealModal(partnerId) {
+            const partner = mockMatches.find(m => m.id === partnerId);
+            const status = userState.revealRequests[partnerId] || { requested: false, bothAccepted: false };
+
+            const modalBox = document.getElementById('modal-box');
+            modalBox.innerHTML = `
+                <div class="space-y-4 text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-neonPink/10 text-neonPink border border-neonPink/30 mx-auto flex items-center justify-center text-2xl glow-pink-sm">
+                        <i class="fa-solid fa-user-lock"></i>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-bold text-white font-heading">Mutual Identity Reveal</h3>
+                        <p class="text-xs text-slate-400 mt-1">Both you and <span class="text-neonTeal font-semibold">${partner.id}</span> must consent before real names and socials are unlocked.</p>
+                    </div>
+
+                    <!-- Status Box -->
+                    <div class="glass-panel p-4 rounded-2xl border border-glassBorder space-y-2 text-left">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-slate-400">Your Request:</span>
+                            <span class="${status.requested ? 'text-emerald-400 font-bold' : 'text-slate-500'}">
+                                ${status.requested ? 'Accepted ✓' : 'Pending Action'}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-slate-400">${partner.id}'s Request:</span>
+                            <span class="${status.bothAccepted ? 'text-emerald-400 font-bold' : 'text-amber-400 font-bold'}">
+                                ${status.bothAccepted ? 'Accepted ✓' : (status.requested ? 'Simulating consent...' : 'Waiting')}
+                            </span>
+                        </div>
+                    </div>
+
+                    ${status.bothAccepted ? `
+                        <div class="bg-emerald-500/10 border border-emerald-500/30 p-3.5 rounded-2xl text-left space-y-1.5 animate-fadeIn">
+                            <span class="text-[10px] text-emerald-400 uppercase font-bold tracking-wider">🎉 Real Student Details</span>
+                            <h4 class="text-sm font-bold text-white">${partner.realName} (${partner.grade})</h4>
+                            <div class="text-xs space-y-1 font-mono text-slate-300">
+                                <p><i class="fa-brands fa-discord text-indigo-400 mr-1.5"></i> ${partner.socials.discord}</p>
+                                <p><i class="fa-brands fa-instagram text-pink-400 mr-1.5"></i> ${partner.socials.instagram}</p>
+                                <p><i class="fa-solid fa-camera-retro text-yellow-400 mr-1.5"></i> ${partner.socials.bereal}</p>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div class="pt-2 flex flex-col gap-2">
+                        ${!status.bothAccepted ? `
+                            <button onclick="triggerRevealConsent('${partner.id}')" class="w-full py-3 rounded-full bg-gradient-to-r from-neonPink to-pink-500 text-white font-bold text-xs shadow-md glow-pink-sm hover:opacity-95">
+                                ${status.requested ? 'Simulate Partner Accepting' : 'Send Identity Reveal Request'}
+                            </button>
+                        ` : ''}
+                        <button onclick="closeModal()" class="w-full py-2.5 rounded-full glass-panel border border-slate-700 text-slate-400 text-xs font-semibold hover:text-white">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+            showModal();
+        }
+
+        function triggerRevealConsent(partnerId) {
+            if (!userState.revealRequests[partnerId]) {
+                userState.revealRequests[partnerId] = { requested: true, bothAccepted: false };
+                showToast("Request sent! Click again to simulate mutual acceptance.");
+            } else if (userState.revealRequests[partnerId].requested) {
+                userState.revealRequests[partnerId].bothAccepted = true;
+                showToast("🎉 Mutual agreement! Identity unlocked.");
+            }
+            openRevealModal(partnerId);
+        }
+
+        // 7. SAFETY & MODERATION FEATURES
+        function openReportModal(partnerId) {
+            const partner = mockMatches.find(m => m.id === partnerId);
+            const modalBox = document.getElementById('modal-box');
+            modalBox.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center border-b border-glassBorder pb-3">
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-shield-halved text-red-400"></i>
+                            <span>Safety & Moderation</span>
+                        </h3>
+                        <button onclick="closeModal()" class="text-slate-500 hover:text-white text-xs">
+                            <i class="fa-solid fa-xmark text-sm"></i>
+                        </button>
+                    </div>
+
+                    <p class="text-xs text-slate-400">Report anonymous student <span class="text-white font-semibold">${partner.id}</span> to High School Moderators.</p>
+
+                    <div class="space-y-2">
+                        <label class="text-[11px] font-bold text-slate-300">Select Reason:</label>
+                        <select id="report-reason" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-red-400">
+                            <option>Inappropriate language or harassment</option>
+                            <option>Asking for real identity/location too fast</option>
+                            <option>Suspicious spam or bot behavior</option>
+                            <option>Bullying or school safety concern</option>
+                        </select>
+                    </div>
+
+                    <div class="p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                        <p class="text-[11px] text-red-300">
+                            <strong>Instant Action:</strong> Reporting will immediately block this user from contacting you again.
+                        </p>
+                    </div>
+
+                    <div class="flex gap-2 pt-2">
+                        <button onclick="submitReport('${partner.id}')" class="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold text-xs shadow-md transition-all">
+                            Submit & Block User
+                        </button>
+                        <button onclick="closeModal()" class="px-4 py-2.5 rounded-xl glass-panel border border-slate-700 text-slate-400 text-xs hover:text-white">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            `;
+            showModal();
+        }
+
+        function submitReport(partnerId) {
+            closeModal();
+            showToast(`🛡️ ${partnerId} has been blocked and reported.`);
+            navigateTo('matches');
+        }
+
+        // --- UTILITY / MODAL HELPERS ---
+        function showModal() {
+            const overlay = document.getElementById('modal-overlay');
+            const modalBox = document.getElementById('modal-box');
+            overlay.classList.remove('hidden');
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+                modalBox.classList.remove('scale-95');
+                modalBox.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const overlay = document.getElementById('modal-overlay');
+            const modalBox = document.getElementById('modal-box');
+            overlay.classList.add('opacity-0');
+            modalBox.classList.remove('scale-100');
+            modalBox.classList.add('scale-95');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+            }, 300);
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'glass-panel bg-slate-900/90 border border-neonTeal/40 text-white text-xs font-semibold px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 mb-2 animate-bounce';
+            toast.innerHTML = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            // Live Time Update
+            const updateClock = () => {
+                const now = new Date();
+                const hours = now.getHours() % 12 || 12;
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                document.getElementById('current-time').innerText = `${hours}:${minutes}`;
+            };
+            updateClock();
+            setInterval(updateClock, 30000);
+
+            // Initial Launch Screen
+            navigateTo('welcome');
+        };
+    </script>
+</body>
+</html>
